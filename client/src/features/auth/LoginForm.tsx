@@ -19,7 +19,7 @@ function LoginForm () {
                         <label htmlFor='email' className=''>Email</label>
                     </div>
                     <input
-                        className='bg-gray-900 w-full py-3 px-2 border-2 border-gray-700 rounded-xl mb-2'
+                        className='bg-gray-900 w-full py-3 px-2 border-2 border-gray-700 rounded-xl mb-2 hover:border-amber-400 focus:border-amber-400 hover:shadow-xl hover:shadow-amber-400/20 focus:shadow-xl focus:shadow-amber-400/30 focus:outline-none'
                         id='email'
                         type="email"
                         value={email}
@@ -32,7 +32,7 @@ function LoginForm () {
                         <label htmlFor='password'>Password</label>
                     </div>
                     <input
-                        className='bg-gray-900 w-full py-3 px-2 border-2 border-gray-700 rounded-xl mb-2'
+                        className='bg-gray-900 w-full py-3 px-2 border-2 border-gray-700 rounded-xl mb-2 hover:border-amber-400 focus:border-amber-400 hover:shadow-xl hover:shadow-amber-400/20 focus:shadow-xl focus:shadow-amber-400/30 focus:outline-none'
                         id='password'
                         type="password"
                         value={password}
@@ -49,10 +49,10 @@ function LoginForm () {
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
                         />
-                        <label htmlFor='remember-me' className='ml-1 text-amber-400'>Remember me</label>
+                        <label htmlFor='remember-me' className='ml-1 text-amber-400 font-bold'>Remember me</label>
                     </div>
                     <div>
-                        <Link to="/forgotPassword" className="text-amber-400 ml-auto">
+                        <Link to="/forgotPassword" className="text-amber-400 ml-auto font-bold">
                             Forgot password?
                         </Link>
                     </div>
@@ -61,7 +61,7 @@ function LoginForm () {
                     <button type="submit" className='bg-amber-400 w-100 py-3 px-1 rounded-xl text-black font-bold text-xl'>Log in</button>
                     <Link to="/register" className=" flex gap-1 text-amber-400 ml-auto mr-auto mt-3">
                         <p className='text-gray-400'>New to Shiny Quest? </p>
-                        <p>Sign Up!</p>
+                        <p className='font-bold'>Sign Up!</p>
                     </Link>
                 </div>
         </form>

@@ -1,5 +1,6 @@
 import logo from '../assets/ShinyQuestLogo.svg';
 import LoginForm from '../features/auth/LoginForm'
+import starBg from '../assets/StarBackground.svg';
 
 function LoginPage () {
 
@@ -8,13 +9,21 @@ function LoginPage () {
         <>
             <section id='login-page' className='flex justify-center min-h-screen font-poppins'>
 
-                <section id="left-side" className='flex flex-col w-3/7 justify-center bg-gray-900 text-white border-r-2 border-gray-700 pl-8 pr-8 gap-4'>
+                <section id="left-side" className='relative flex flex-col w-3/7 justify-center bg-gray-900 text-white border-r-2 border-gray-700 pl-8 pr-8 gap-4 overflow-hidden bg-gradient-to-b from-gray-950 via-gray-900 to-gray-850'>
 
                     <img 
                         src={logo} 
                         alt="" 
                         aria-hidden="true" 
-                        className="absolute opacity-6 w-1/3" 
+                        className="absolute opacity-6 w-2/3" 
+                    />
+                    <div 
+                        className="absolute inset-0 bg-repeat opacity-3 overflow-hidden"
+                        style={{ 
+                            backgroundImage: `url(${starBg})`, 
+                            backgroundSize: '300px 300px',
+                            transform: 'rotate(20deg) scale(1.5)',
+                        }}
                     />
 
                     <div id="logo" className=" flex gap-3 mt-auto text-4xl font-bold">
@@ -46,9 +55,21 @@ function LoginPage () {
 
                 </section>
 
-                <section id="right-side" className="flex flex-1 bg-gray-950 text-white justify-center flex-col items-center
-                    bg-[radial-gradient(circle,#FFE06655_1px,transparent_1px)] bg-[size:20px_20px]">
-                    <LoginForm/>
+                <section 
+                    id="right-side" 
+                    className="relative flex flex-1 h-screen bg-gray-950 text-white justify-center flex-col items-center overflow-hidden"
+                >
+                    <div 
+                        className="absolute inset-0 bg-repeat opacity-10"
+                        style={{ 
+                            backgroundImage: `url(${starBg})`, 
+                            backgroundSize: '300px 300px',
+                            transform: 'rotate(20deg) scale(1.5)',
+                        }}
+                    />
+                    <div className="relative z-10 flex flex-col items-center">
+                        <LoginForm/>
+                    </div>
                 </section>
 
             </section>
