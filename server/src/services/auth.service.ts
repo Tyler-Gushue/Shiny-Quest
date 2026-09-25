@@ -88,6 +88,11 @@ export async function signup(input : SignupInput) {
 
 }
 
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
 export async function login( input : LoginInput ) {
 
   const { email, password } = input
@@ -119,4 +124,33 @@ export async function login( input : LoginInput ) {
 
   }
 
+}
+
+export async function  refresh( token: string ) {
+
+  const storedToken = await RefreshToken.findOne( { token } )
+
+  if ( !storedToken || storedToken.expiresAt < new Date() ) {
+
+    throw new Error("Invalid refresh token")
+
+  }
+
+  const user = await User.findById( storedToken.userId )
+
+  if ( !user ) {
+
+    throw new Error("Invalid refresh token")
+
+  }
+
+  const accessToken = generateAccessToken( user._id.toString() )
+
+  return {
+
+     user: { id: user._id.toString(), username: user.username, email: user.email },
+     accessToken
+
+  }
+  
 }

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { signup, login } from '../services/auth.service.js'
+import { signup, login, refresh } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
@@ -60,4 +60,36 @@ export async function loginController ( req: Request, res: Response ) {
 
     }
 
+}
+
+export async function refreshController( req: Request, res: Response ) {
+
+    const token = req.cookies.refreshToken
+
+    if ( !token ) {
+
+        return res.status(401).json({ message: 'No session' })
+
+    }
+
+    try {
+
+        const { user, accessToken } = await refresh(token)
+
+        res.status(200).json({ user, accessToken })
+
+    } catch (err) {
+
+        if ( err instanceof Error && err.message === 'Invalid refresh token') {
+
+            res.clearCookie('refreshToken', { path: '/api/auth' })
+            return res.status(401).json({ message: 'Session expired, please log in again' })
+
+        }
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+    
 }
