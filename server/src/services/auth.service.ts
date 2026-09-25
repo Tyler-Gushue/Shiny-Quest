@@ -11,6 +11,11 @@ interface SignupInput {
   password: string
 }
 
+interface LoginInput {
+  email: string
+  password: string
+}
+
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
 
 const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m'
@@ -79,6 +84,39 @@ export async function signup(input : SignupInput) {
     user: { id: userId, username: user.username, email: user.email },
     accessToken,
     refreshToken,
+  }
+
+}
+
+export async function login( input : LoginInput ) {
+
+  const { email, password } = input
+
+  const user = await User.findOne( { email } ).select( '+passwordHash' )
+
+  if ( !user ) {
+
+    throw new Error('Invalid email or password')
+
+  }
+
+  if ( !await bcrypt.compare( password, user.passwordHash ) ) {
+
+    throw new Error('Invalid email or password')
+
+  }
+
+  const userId = user._id.toString()
+
+  const accessToken = generateAccessToken(userId)
+  const refreshToken = await createRefreshToken(userId)
+
+  return {
+
+    user: { id: userId, username: user.username, email: user.email },
+    accessToken,
+    refreshToken
+
   }
 
 }

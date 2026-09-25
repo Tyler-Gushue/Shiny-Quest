@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from 'express'
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/
 
-export function validateSignup (req: Request, res: Response, next: NextFunction) {
+export function validateSignup ( req: Request, res: Response, next: NextFunction ) {
 
     const { username, email, password, confirmPassword } = req.body
 
@@ -34,6 +34,20 @@ export function validateSignup (req: Request, res: Response, next: NextFunction)
     if ( password !== confirmPassword ) {
 
         return res.status(400).json( { message: 'Password and confirm password do not match' } )
+
+    }
+
+    next()
+
+}
+
+export function validateLogin ( req: Request, res: Response, next: NextFunction ) {
+
+    const { email, password } = req.body
+
+    if ( !email || !password ) {
+
+        return res.status(400).json( { message: 'All fields are required' } )
 
     }
 
