@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { signup, login, refresh } from '../services/auth.service.js'
+import { signup, login, refresh, logout, getCurrentUser } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
@@ -24,6 +24,18 @@ export async function signupController ( req: Request, res: Response ) {
 
 
     } catch (err) {
+
+        if (err instanceof Error && err.message === 'Email or username already taken') {
+
+                return res.status(409).json({ message: err.message })
+
+        }
+
+        if ((err as any).code === 11000) {
+
+            return res.status(409).json({ message: 'Email or username already taken' })
+            
+        }
 
         console.error(err)
         res.status(500).json({ message: 'Something went wrong' })
@@ -92,4 +104,56 @@ export async function refreshController( req: Request, res: Response ) {
 
     }
     
+}
+
+/**
+ * 
+ * @param req 
+ * @param res 
+ */
+export async function logoutController( req: Request, res: Response ) {
+
+    const token = req.cookies.refreshToken
+
+    try {
+
+        if ( token ) {
+
+            await logout(token)
+
+        }
+
+        res.clearCookie('refreshToken', { path: '/api/auth' })
+        res.status(200).json({ message: 'Logged out successfully' })
+
+    } catch (err) {
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}    
+
+export async function meController ( req: Request, res: Response ) {
+
+    try {
+
+        const user = await getCurrentUser(req.userId!)
+        res.status(200).json({ user })
+
+    } catch (err) {
+
+        
+        if ( err instanceof Error && err.message === 'User not found' ) {
+
+            return res.status(404).json({ message: err.message })
+
+        }
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
 }

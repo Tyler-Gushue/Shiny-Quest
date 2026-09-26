@@ -126,6 +126,11 @@ export async function login( input : LoginInput ) {
 
 }
 
+/**
+ * 
+ * @param token 
+ * @returns 
+ */
 export async function  refresh( token: string ) {
 
   const storedToken = await RefreshToken.findOne( { token } )
@@ -153,4 +158,44 @@ export async function  refresh( token: string ) {
 
   }
   
+}
+
+/**
+ * 
+ * @param token 
+ */
+export async function logout( token: string ) {
+
+  await RefreshToken.deleteOne( { token } )
+
+}
+
+export function verifyAccessToken( token: string ): string {
+
+  if (!JWT_ACCESS_SECRET) throw new Error('JWT_ACCESS_SECRET is not set in .env')
+
+  const payload = jwt.verify( token, JWT_ACCESS_SECRET )
+
+  if ( typeof payload === 'string' || !payload.sub ) {
+
+    throw new Error('Invalid access token')
+
+  }
+
+  return payload.sub
+
+}
+
+export async function getCurrentUser(userId: string) {
+
+  const user = await User.findById(userId)
+
+  if (!user) {
+
+    throw new Error('User not found')
+
+  }
+
+  return ({ id: user._id.toString(), username: user.username, email: user.email })
+
 }
