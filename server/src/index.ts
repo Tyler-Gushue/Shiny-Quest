@@ -3,9 +3,11 @@ import express from 'express'
 import { connectDB } from './config/db.js'
 import authRoutes from './routes/auth.routes.js'
 import cookieParser from 'cookie-parser'
+import { globalLimiter} from './middleware/rateLimiters.js'
 
 const app = express()
 
+app.use(globalLimiter)
 app.use(express.json())
 app.use(cookieParser())
 
