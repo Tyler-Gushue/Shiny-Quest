@@ -1,17 +1,17 @@
 import React from 'react';
 import RecoveryLayout from '../components/RecoveryLayout';
-import ForgotPasswordForm from '../features/auth/ForgotPasswordForm';
+import ChangePasswordForm from '../features/auth/ChangePasswordForm';
 
-function ForgotPasswordPage () {
-
+function ChangePasswordPage() {
+    
     return (
         <>
             <RecoveryLayout>
-                <ForgotPasswordForm />
+                <ChangePasswordForm />
             </RecoveryLayout>
         </>
     )
 
 }
 
-export default ForgotPasswordPage;
+export default ChangePasswordPage;

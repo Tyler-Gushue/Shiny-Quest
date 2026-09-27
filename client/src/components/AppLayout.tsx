@@ -5,7 +5,7 @@ export default function AppLayout() {
   return (
     <>
       <Navbar />
-      <main className="p-4">
+      <main className="p-4 font-display">
         <Outlet />
       </main>
     </>

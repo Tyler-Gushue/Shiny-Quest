@@ -58,7 +58,7 @@ function LoginForm () {
                     </div>
                 </div>
                 <div className='flex justify-center flex-col'>
-                    <button type="submit" className='bg-amber-400 w-100 py-3 px-1 rounded-xl text-black font-bold text-xl'>Log in</button>
+                    <button type="submit" className='bg-amber-400 w-100 py-3 px-1 rounded-xl text-black font-bold text-xl active:bg-amber-500 active:text-gray-800'>Log in</button>
                     <Link to="/register" className=" flex gap-1 text-amber-400 ml-auto mr-auto mt-3">
                         <p className='text-gray-400'>New to Shiny Quest? </p>
                         <p className='font-bold'>Sign Up!</p>

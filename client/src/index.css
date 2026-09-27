@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@layer base {
+    button:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
 @theme {
-    --font-poppins: "Poppins", sans-serif;
+    --font-sans: "Poppins", sans-serif;       /* body text everywhere */
+    --font-display: "Sniglet", sans-serif;    /* use with className="font-display" */
 }
