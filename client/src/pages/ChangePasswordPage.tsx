@@ -1,9 +1,8 @@
-import React from 'react';
 import RecoveryLayout from '../components/RecoveryLayout';
 import ChangePasswordForm from '../features/auth/ChangePasswordForm';
 
 function ChangePasswordPage() {
-    
+
     return (
         <>
             <RecoveryLayout>

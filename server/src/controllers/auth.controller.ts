@@ -1,26 +1,23 @@
 import type { Request, Response } from 'express';
-import { signup, login, refresh, logout, getCurrentUser } from '../services/auth.service.js'
+import { signup, login, refresh, logout, getCurrentUser, verifyEmail } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function signupController ( req: Request, res: Response ) {
 
     try {
 
-        const { user, accessToken, refreshToken } = await signup(req.body)
+        const { email } = await signup(req.body)
 
-        res.cookie('refreshToken', refreshToken, {
-            
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax',
-            maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
-            path: '/api/auth',
-            
-        })
 
-        res.status(201).json( { user, accessToken } )
+        res.status(201).json( { message: "Account created.  Check your email for verification code." } )
 
 
     } catch (err) {
@@ -43,6 +40,12 @@ export async function signupController ( req: Request, res: Response ) {
     }
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function loginController ( req: Request, res: Response ) {
 
     try {
@@ -74,6 +77,12 @@ export async function loginController ( req: Request, res: Response ) {
 
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function refreshController( req: Request, res: Response ) {
 
     const token = req.cookies.refreshToken
@@ -135,6 +144,12 @@ export async function logoutController( req: Request, res: Response ) {
 
 }    
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function meController ( req: Request, res: Response ) {
 
     try {
@@ -148,6 +163,45 @@ export async function meController ( req: Request, res: Response ) {
         if ( err instanceof Error && err.message === 'User not found' ) {
 
             return res.status(404).json({ message: err.message })
+
+        }
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}
+
+export async function verifyEmailController ( req: Request, res: Response ) {
+
+    try {
+
+        const { user, accessToken, refreshToken } = await verifyEmail(req.body)
+
+        res.cookie('refreshToken', refreshToken, {
+
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
+            path: '/api/auth'
+            
+        })
+
+        res.status(200).json( { user, accessToken } )
+
+    } catch (err) {
+
+        if ( err instanceof Error && err.message === 'Invalid or expired code' ) {
+
+            return res.status(400).json({ message: err.message })
+
+        }
+
+        if ( err instanceof Error && err.message === 'Email already verified' ) {
+
+            return res.status(409).json({ message: err.message })
 
         }
 

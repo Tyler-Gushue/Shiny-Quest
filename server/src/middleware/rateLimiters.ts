@@ -60,3 +60,13 @@ export const registerLimiter = rateLimit ({
     message: { message: 'Too many registration attempts, please try again later.' }
 
 });
+
+export const verifyEmailLimiter = rateLimit ({
+
+    windowMs: 15 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { message: 'Too many verification attempts, please try again later.'}
+
+})

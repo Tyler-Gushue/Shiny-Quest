@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken'
 import crypto from 'node:crypto'
 import { User } from '../models/User.js'
 import { RefreshToken } from '../models/RefreshToken.js'
+import { sendVerificationEmail } from './email.service.js'
+import { createVerificationCode, verifyCode } from './verification.service.js'
 
 // Types for what signup receives
 interface SignupInput {
@@ -14,6 +16,11 @@ interface SignupInput {
 interface LoginInput {
   email: string
   password: string
+}
+
+interface VerifyEmail {
+  email: string,
+  code: string
 }
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
@@ -77,13 +84,21 @@ export async function signup(input : SignupInput) {
 
   const userId = user._id.toString()
 
-  const accessToken = generateAccessToken(userId)
-  const refreshToken = await createRefreshToken(userId)
+  const code = await createVerificationCode({ userId, purpose: 'email_verification' })
+
+  try {
+
+    await sendVerificationEmail(email, code)
+
+  } catch (error) {
+
+    console.error('Failed to send verification email:', error)
+    throw new Error('Failed to send verification email')
+
+  }
 
   return {
-    user: { id: userId, username: user.username, email: user.email },
-    accessToken,
-    refreshToken,
+    email: user.email
   }
 
 }
@@ -186,6 +201,11 @@ export function verifyAccessToken( token: string ): string {
 
 }
 
+/**
+ * 
+ * @param userId 
+ * @returns 
+ */
 export async function getCurrentUser(userId: string) {
 
   const user = await User.findById(userId)
@@ -197,5 +217,58 @@ export async function getCurrentUser(userId: string) {
   }
 
   return ({ id: user._id.toString(), username: user.username, email: user.email })
+
+}
+
+/**
+ * 
+ * @param input 
+ */
+export async function verifyEmail (input: VerifyEmail) {
+
+  const { email, code } = input
+
+  const user = await User.findOne( { email } )
+
+  if (!user) {
+
+    throw new Error('Invalid or expired code')
+
+  }
+
+  if ( user.emailVerified ) {
+
+    throw new Error ( 'Email already verified' )
+
+  }
+
+  const userId = user._id.toString()
+
+  const purpose = 'email_verification'
+
+  const isVerified = await verifyCode( {userId, purpose, code} )
+
+  if ( isVerified ) {
+
+    user.emailVerified = true
+    await user.save()
+
+    const accessToken = generateAccessToken(userId)
+    const refreshToken = await createRefreshToken(userId)
+
+    return {
+
+      user: { id: userId, username: user.username, email: user.email },
+      accessToken,
+      refreshToken
+
+    }
+
+
+  } else {
+
+    throw new Error('Invalid or expired code')
+
+  }
 
 }

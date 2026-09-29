@@ -1,4 +1,3 @@
-import React from 'react'
 import RecoveryLayout from '../components/RecoveryLayout';
 import VerifyCodeForm from '../features/auth/VerifyCodeForm'
 

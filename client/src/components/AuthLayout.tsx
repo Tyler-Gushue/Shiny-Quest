@@ -27,7 +27,7 @@ function AuthLayout({ tagline, children }: AuthLayoutProps) {
 
                         <div className="flex flex-col">
                             <text>14,728</text>
-                            <text>Shinnies Logged</text>
+                            <text>Shinies Logged</text>
                         </div>
                         <div className="flex flex-col ml-auto mr-auto">
                             <text>1,765</text>
