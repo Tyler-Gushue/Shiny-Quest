@@ -126,6 +126,12 @@ export async function login( input : LoginInput ) {
 
   }
 
+    if ( !user.emailVerified ) {
+
+    throw new Error('Email is not verified')
+
+  }
+
   const userId = user._id.toString()
 
   const accessToken = generateAccessToken(userId)

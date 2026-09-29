@@ -66,8 +66,12 @@ export async function loginController ( req: Request, res: Response ) {
 
     } catch (err) {
 
-        if (err instanceof Error && err.message === 'Invalid email or password') {
+        if ( err instanceof Error && err.message === 'Invalid email or password' ) {
             return res.status(401).json({ message: err.message })
+        }
+
+        if ( err instanceof Error && err.message === 'Email is not verified' ) {
+            return res.status(403).json({ message: err.message })
         }
 
         console.error(err)
@@ -173,6 +177,12 @@ export async function meController ( req: Request, res: Response ) {
 
 }
 
+/**
+ * 
+ * @param req 
+ * @param res 
+ * @returns 
+ */
 export async function verifyEmailController ( req: Request, res: Response ) {
 
     try {
