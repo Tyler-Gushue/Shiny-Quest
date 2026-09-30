@@ -15,6 +15,11 @@ const MAX_CODE_ATTEMPTS = 5
 const VERIFICATION_CODE_SECRET = process.env.VERIFICATION_CODE_SECRET
 const VERIFICATION_CODE_EXPIRES_IN = (Number(process.env.VERIFICATION_CODE_EXPIRES_IN) || 10) * 60 * 1000
 
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
 export async function createVerificationCode( input: CodeInput ): Promise<string> {
 
     if (!VERIFICATION_CODE_SECRET) {
@@ -39,6 +44,11 @@ export async function createVerificationCode( input: CodeInput ): Promise<string
 
 }
 
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
 export async function verifyCode ( input: VerifyCodeInput): Promise<boolean> {
 
     if ( !VERIFICATION_CODE_SECRET ) {

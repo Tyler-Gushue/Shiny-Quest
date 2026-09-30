@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'node:crypto'
 import { User } from '../models/User.js'
 import { RefreshToken } from '../models/RefreshToken.js'
-import { sendVerificationEmail } from './email.service.js'
+import { sendVerificationEmail, sendResetEmail } from './email.service.js'
 import { createVerificationCode, verifyCode } from './verification.service.js'
 
 // Types for what signup receives
@@ -18,7 +18,13 @@ interface LoginInput {
   password: string
 }
 
-interface VerifyEmail {
+interface NewVerificationCode {
+  email: string
+  userId: string
+  purpose: 'email_verification' | 'password_reset'
+}
+
+interface VerifyCode {
   email: string,
   code: string
 }
@@ -69,7 +75,9 @@ export async function createRefreshToken(userId: string): Promise<string> {
  */
 export async function signup(input : SignupInput) {
 
-  const { username, email, password } = input
+  const email = input.email.trim().toLocaleLowerCase()
+  const username = input.username.trim()
+  const password = input.password.trim()
 
   if ( await User.findOne({ $or: [{ email }, { username }] }) ) {
 
@@ -82,20 +90,7 @@ export async function signup(input : SignupInput) {
 
   const user = await User.create( { email, username, passwordHash})
 
-  const userId = user._id.toString()
-
-  const code = await createVerificationCode({ userId, purpose: 'email_verification' })
-
-  try {
-
-    await sendVerificationEmail(email, code)
-
-  } catch (error) {
-
-    console.error('Failed to send verification email:', error)
-    throw new Error('Failed to send verification email')
-
-  }
+  await sendVerificationCode({ email, userId: user._id.toString(), purpose: 'email_verification' })
 
   return {
     email: user.email
@@ -110,7 +105,9 @@ export async function signup(input : SignupInput) {
  */
 export async function login( input : LoginInput ) {
 
-  const { email, password } = input
+  const email = input.email.trim().toLocaleLowerCase()
+  const password = input.password.trim()
+  
 
   const user = await User.findOne( { email } ).select( '+passwordHash' )
 
@@ -126,14 +123,14 @@ export async function login( input : LoginInput ) {
 
   }
 
-    if ( !user.emailVerified ) {
+  if ( !user.emailVerified ) {
 
+    await sendVerificationCode({ email, userId: user._id.toString(), purpose: 'email_verification' })
     throw new Error('Email is not verified')
 
   }
 
   const userId = user._id.toString()
-
   const accessToken = generateAccessToken(userId)
   const refreshToken = await createRefreshToken(userId)
 
@@ -228,23 +225,114 @@ export async function getCurrentUser(userId: string) {
 
 /**
  * 
+ * @param email 
+ * @returns 
+ */
+export async function sendEmailVerificationCode (email: string) {
+
+  const user = await User.findOne( { email } )
+
+  if ( !user ) {
+
+    return
+
+  }
+
+  if ( user.emailVerified ) {
+
+    return
+
+  }
+
+  const userId = user._id.toString()
+
+  const code = await createVerificationCode({ userId, purpose: 'email_verification' })
+
+  try {
+
+    await sendVerificationEmail(email, code)
+
+  } catch (error) {
+
+    console.error('Failed to send verification email:', error)
+    throw new Error('Failed to send verification email')
+
+  }
+
+  return
+
+}
+
+export async function sendResetVerificationCode (email: string) {
+
+  const user = await User.findOne( { email } )
+
+  if ( !user ) {
+
+    return
+
+  }
+
+  const userId = user._id.toString()
+
+  const code = await createVerificationCode({ userId, purpose: 'password_reset' })
+
+  try {
+
+    await sendResetEmail(email, code)
+
+  } catch (error) {
+
+    console.error('Failed to send verification email:', error)
+    throw new Error('Failed to send verification email')
+
+  }
+
+  return
+
+}
+
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
+async function sendVerificationCode (input: NewVerificationCode) {
+
+  const { userId, purpose } = input
+  const email = input.email.trim().toLocaleLowerCase()
+
+  const code = await createVerificationCode({ userId, purpose })
+
+  try {
+
+    await sendVerificationEmail(email, code)
+
+  } catch (error) {
+
+    console.error('Failed to send verification email:', error)
+    throw new Error('Failed to send verification email')
+
+  }
+
+  return
+
+}
+
+/**
+ * 
  * @param input 
  */
-export async function verifyEmail (input: VerifyEmail) {
+export async function verifyEmail (input: VerifyCode) {
 
-  const { email, code } = input
+  const code = input.code.trim()
+  const email = input.email.trim().toLocaleLowerCase()
 
   const user = await User.findOne( { email } )
 
   if (!user) {
 
     throw new Error('Invalid or expired code')
-
-  }
-
-  if ( user.emailVerified ) {
-
-    throw new Error ( 'Email already verified' )
 
   }
 
@@ -258,6 +346,59 @@ export async function verifyEmail (input: VerifyEmail) {
 
     user.emailVerified = true
     await user.save()
+
+    const accessToken = generateAccessToken(userId)
+    const refreshToken = await createRefreshToken(userId)
+
+    return {
+
+      user: { id: userId, username: user.username, email: user.email },
+      accessToken,
+      refreshToken
+
+    }
+
+
+  } else {
+
+    throw new Error('Invalid or expired code')
+
+  }
+
+}
+
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
+export async function verifyReset (input: VerifyCode) {
+
+  const code = input.code.trim()
+  const email = input.email.trim().toLocaleLowerCase()
+
+  const user = await User.findOne( { email } )
+
+  if (!user) {
+
+    throw new Error('Invalid or expired code')
+
+  }
+
+  const userId = user._id.toString()
+
+  const purpose = 'password_reset'
+
+  const isVerified = await verifyCode( {userId, purpose, code} )
+
+  if ( isVerified ) {
+
+    if ( !user.emailVerified ) {
+
+      user.emailVerified = true
+      await user.save()
+
+    }
 
     const accessToken = generateAccessToken(userId)
     const refreshToken = await createRefreshToken(userId)

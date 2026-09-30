@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { signup, login, refresh, logout, getCurrentUser, verifyEmail } from '../services/auth.service.js'
+import { signup, login, refresh, logout, getCurrentUser, verifyEmail, sendEmailVerificationCode, sendResetVerificationCode, verifyReset } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
@@ -177,6 +177,42 @@ export async function meController ( req: Request, res: Response ) {
 
 }
 
+export async function sendEmailVerificationCodeController ( req: Request, res: Response ) {
+
+    const email = req.body.email.trim().toLocaleLowerCase()
+
+    try {
+
+        await sendEmailVerificationCode(email)
+        res.status(200).json({ message: 'Email sent if account exists.' })
+
+    } catch (err) {
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}
+
+export async function sendResetVerificationCodeController ( req: Request, res: Response ) {
+
+     const email = req.body.email.trim().toLocaleLowerCase()
+
+    try {
+
+        await sendResetVerificationCode(email)
+        res.status(200).json({ message: 'Email sent if account exists.' })
+
+    } catch (err) {
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}
+
 /**
  * 
  * @param req 
@@ -199,7 +235,7 @@ export async function verifyEmailController ( req: Request, res: Response ) {
             
         })
 
-        res.status(200).json( { user, accessToken } )
+        res.status(200).json( { user, accessToken, message: 'Email Verified' } )
 
     } catch (err) {
 
@@ -209,9 +245,36 @@ export async function verifyEmailController ( req: Request, res: Response ) {
 
         }
 
-        if ( err instanceof Error && err.message === 'Email already verified' ) {
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
 
-            return res.status(409).json({ message: err.message })
+    }
+
+}
+
+export async function verifyResetController ( req: Request, res: Response ) {
+
+    try {
+
+        const { user, accessToken, refreshToken } = await verifyReset(req.body)
+
+        res.cookie('refreshToken', refreshToken, {
+
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? 'none' : 'lax',
+            maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
+            path: '/api/auth'
+            
+        })
+
+        res.status(200).json( { user, accessToken, message: 'Password Reseted' } )
+
+    } catch (err) {
+
+        if ( err instanceof Error && err.message === 'Invalid or expired code' ) {
+
+            return res.status(400).json({ message: err.message })
 
         }
 

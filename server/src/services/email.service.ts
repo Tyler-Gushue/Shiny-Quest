@@ -55,3 +55,22 @@ export async function sendVerificationEmail(to: string, code: string) {
     })
 
 }
+
+export async function sendResetEmail(to: string, code: string) {
+
+    return sendEmail({
+
+        to,
+        subject: 'Your Shiny Quest password reset code',
+        text: `Your Shiny Quest password reset code is ${code}. It expires in ${VERIFICATION_CODE_EXPIRES_IN} minutes. If you didn't request a password reset you can ignore this email.`,
+        html: `
+            <p>Your Shiny Quest password reset code is:</p>
+            <p style="font-size: 28px; font-weight: bold; letter-spacing: 6px;">${code}</p>
+            <p>It expires in ${VERIFICATION_CODE_EXPIRES_IN} minutes.</p>
+            <p>If you didn't request a password reset you can ignore this email.</p>
+            <img src="https://shinyquest.app/email-logo.png" alt="Shiny Quest" width="300" style="display: block; margin-bottom: 24px; margin-top: 5px" />
+        `
+
+    })
+
+}

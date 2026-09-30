@@ -61,7 +61,7 @@ export const registerLimiter = rateLimit ({
 
 });
 
-export const verifyEmailLimiter = rateLimit ({
+export const verifyLimiter = rateLimit ({
 
     windowMs: 15 * 60 * 1000,
     limit: 10,
@@ -70,3 +70,41 @@ export const verifyEmailLimiter = rateLimit ({
     message: { message: 'Too many verification attempts, please try again later.'}
 
 })
+
+export const sendVerificationIpLimiter = rateLimit ({
+
+    windowMs: 30 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false, 
+    message: { message: 'Too many resend requests, please try again later.' }    
+
+});
+
+export const sendVerificationAccountLimiter = rateLimit ({
+
+    windowMs: 30 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false, 
+    message: { message: 'Too many resend requests, please try again later.' },
+
+    keyGenerator: (req, res) => {
+
+        const ipKey = ipKeyGenerator(req.ip ?? '');
+
+        const email = req.body?.email;
+
+        if ( typeof email !== 'string' ) {
+
+            return ipKey;
+
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        return normalizedEmail;
+
+    }
+
+});

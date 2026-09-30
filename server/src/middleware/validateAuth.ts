@@ -102,3 +102,23 @@ export function validateVerifyEmail ( req: Request, res: Response, next: NextFun
     next()
 
 }
+
+export function validateSendVerificationCode ( req: Request, res: Response, next: NextFunction ){
+
+    const { email } = req.body
+
+    if ( typeof email !== 'string' ) {
+
+        return res.status(400).json( { message: 'Email is required' } )
+
+    }
+
+    if ( !EMAIL_REGEX.test(email) ) {
+
+        return res.status(400).json( { message: 'Email has invalid format' } )
+
+    }
+
+    next()
+
+}
