@@ -38,6 +38,8 @@ interface ResetPasswordInput {
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
 const JWT_RESET_SECRET = process.env.JWT_RESET_SECRET
 
+const JWT_ALGORITHM = 'HS256'
+
 const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m'
 const RESET_TOKEN_EXPIRES_IN = process.env.RESET_TOKEN_EXPIRES_IN || '10m'
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
@@ -56,7 +58,7 @@ export function generateAccessToken(userId: string): string {
   return jwt.sign(
     { sub: userId },
     JWT_ACCESS_SECRET,
-    { expiresIn: ACCESS_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+    { expiresIn: ACCESS_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'], audience: 'access', algorithm: JWT_ALGORITHM }
   )
 
 }
@@ -73,7 +75,7 @@ export function generateResetToken(userId: string): string {
   return jwt.sign(
     { sub: userId },
     JWT_RESET_SECRET,
-    { expiresIn: RESET_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+    { expiresIn: RESET_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'], audience: 'reset', algorithm: JWT_ALGORITHM }
   )
 
 }
@@ -229,7 +231,7 @@ export function verifyAccessToken( token: string ): string {
 
   if (!JWT_ACCESS_SECRET) throw new Error('JWT_ACCESS_SECRET is not set in .env')
 
-  const payload = jwt.verify( token, JWT_ACCESS_SECRET )
+  const payload = jwt.verify( token, JWT_ACCESS_SECRET, { algorithms: [JWT_ALGORITHM], audience: 'access' } )
 
   if ( typeof payload === 'string' || !payload.sub ) {
 
@@ -245,7 +247,7 @@ export function verifyResetToken( token: string ): { userId: string, iat: number
 
   if (!JWT_RESET_SECRET) throw new Error('JWT_RESET_SECRET is not set in .env')
 
-  const payload = jwt.verify( token, JWT_RESET_SECRET )
+  const payload = jwt.verify( token, JWT_RESET_SECRET, { algorithms: ['HS256'], audience: 'reset' } )
 
   if ( typeof payload === 'string' || !payload.sub || !payload.iat ) {
 
