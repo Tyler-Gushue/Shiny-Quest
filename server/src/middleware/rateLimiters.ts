@@ -45,7 +45,7 @@ export const loginAccountLimiter = rateLimit ({
 
         const normalizedEmail = email.trim().toLowerCase();
 
-        return `${normalizedEmail}`;
+        return `${ipKey}:${normalizedEmail}`;
 
     }
 
@@ -109,6 +109,44 @@ export const sendVerificationAccountLimiter = rateLimit ({
 
 });
 
+export const sendResetIpLimiter = rateLimit ({
+
+    windowMs: 30 * 60 * 1000,
+    limit: 10,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false, 
+    message: { message: 'Too many reset code requests, please try again later.' }    
+
+});
+
+export const sendResetAccountLimiter = rateLimit ({
+
+    windowMs: 30 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false, 
+    message: { message: 'Too many reset code requests, please try again later.' },
+
+    keyGenerator: (req, res) => {
+
+        const ipKey = ipKeyGenerator(req.ip ?? '');
+
+        const email = req.body?.email;
+
+        if ( typeof email !== 'string' ) {
+
+            return ipKey;
+
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        return normalizedEmail;
+
+    }
+
+});
+
 export const resetPasswordLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
@@ -129,9 +167,7 @@ export const resetPasswordLimiter = rateLimit ({
 
         }
 
-        const normalizedUserId = userId;
-
-        return normalizedUserId;
+        return userId;
 
     }
 

@@ -4,7 +4,7 @@ import { validateSignup, validateLogin, validateRefreshCookie, validateVerifyEma
 import { checkOrigin } from '../middleware/checkOrigin.js'
 import { requireAuth } from '../middleware/requireAuth.js'
 import { requireResetToken } from '../middleware/requireResetToken.js'
-import { loginIpLimiter, loginAccountLimiter, registerLimiter, verifyLimiter, sendVerificationAccountLimiter, sendVerificationIpLimiter, resetPasswordLimiter } from '../middleware/rateLimiters.js'
+import { loginIpLimiter, loginAccountLimiter, registerLimiter, verifyLimiter, sendVerificationAccountLimiter, sendVerificationIpLimiter, resetPasswordLimiter, sendResetIpLimiter, sendResetAccountLimiter } from '../middleware/rateLimiters.js'
 
 const router = Router()
 
@@ -16,7 +16,7 @@ router.get( '/me', requireAuth, meController )
 router.post( '/verify-email', verifyLimiter, validateVerifyEmail, verifyEmailController )
 router.post( '/verify-reset', verifyLimiter, validateVerifyEmail, verifyResetController )
 router.post( '/email-code', sendVerificationIpLimiter, sendVerificationAccountLimiter, validateSendVerificationCode, sendEmailVerificationCodeController )
-router.post( '/reset-code', sendVerificationIpLimiter, sendVerificationAccountLimiter, validateSendVerificationCode, sendResetVerificationCodeController )
+router.post( '/reset-code', sendResetIpLimiter, sendResetAccountLimiter, validateSendVerificationCode, sendResetVerificationCodeController )
 router.post( '/reset-password',  requireResetToken, resetPasswordLimiter, validateResetPassword, resetPasswordController)
 
 export default router
