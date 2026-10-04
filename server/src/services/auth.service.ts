@@ -42,6 +42,8 @@ const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m'
 const RESET_TOKEN_EXPIRES_IN = process.env.RESET_TOKEN_EXPIRES_IN || '10m'
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 
+const dummyHash = '$2b$12$HT6UGAOpKyPJRwhPoOuaQexC5plUZnbTvkN4E.w3OAjAxpKaT2nVe'
+
 /**
  * function for generating access tokens so users can access protected routes
  * @param userId - user id connected to the access token
@@ -139,6 +141,7 @@ export async function login( input : LoginInput ) {
 
   if ( !user ) {
 
+    await bcrypt.compare( password, dummyHash )
     throw new Error('Invalid email or password')
 
   }
@@ -175,7 +178,7 @@ export async function login( input : LoginInput ) {
  * @param token 
  * @returns 
  */
-export async function  refresh( token: string ) {
+export async function refresh( token: string ) {
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
