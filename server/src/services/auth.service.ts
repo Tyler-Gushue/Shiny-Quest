@@ -81,13 +81,13 @@ export function generateResetToken(userId: string): string {
  * @param userId 
  * @returns 
  */
-export async function createRefreshToken(userId: string): Promise<string> {
+export async function createRefreshToken(userId: string, expiry?: Date): Promise<string> {
 
   const token = crypto.randomBytes(64).toString('hex')
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000)
+  const expiresAt = expiry ?? new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000)
 
   await RefreshToken.create({ tokenHash, userId, expiresAt })
 
@@ -179,7 +179,7 @@ export async function  refresh( token: string ) {
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-  const storedToken = await RefreshToken.findOne({ tokenHash })
+  const storedToken = await RefreshToken.findOneAndDelete({ tokenHash })
 
   if ( !storedToken || storedToken.expiresAt < new Date() ) {
 
@@ -195,12 +195,16 @@ export async function  refresh( token: string ) {
 
   }
 
+  const refreshToken = await createRefreshToken(user.id, storedToken.expiresAt);
+
   const accessToken = generateAccessToken( user._id.toString() )
 
   return {
 
      user: { id: user._id.toString(), username: user.username, email: user.email },
-     accessToken
+     accessToken, 
+     refreshToken,
+     expiry: storedToken.expiresAt.getTime() - Date.now()
 
   }
   
@@ -214,7 +218,7 @@ export async function logout( token: string ) {
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
 
-  await RefreshToken.deleteOne({ tokenHash })
+  await RefreshToken.deleteMany({ tokenHash });
 
 }
 

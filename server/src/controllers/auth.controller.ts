@@ -56,7 +56,7 @@ export async function loginController ( req: Request, res: Response ) {
             
             httpOnly: true,
             secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax',
+            sameSite: 'lax',
             maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
             path: '/api/auth',
             
@@ -99,7 +99,17 @@ export async function refreshController( req: Request, res: Response ) {
 
     try {
 
-        const { user, accessToken } = await refresh(token)
+        const { user, accessToken, refreshToken, expiry } = await refresh(token)
+
+        res.cookie('refreshToken', refreshToken, {
+            
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax',
+            maxAge: expiry,
+            path: '/api/auth',
+            
+        })
 
         res.status(200).json({ user, accessToken })
 
@@ -229,7 +239,7 @@ export async function verifyEmailController ( req: Request, res: Response ) {
 
             httpOnly: true,
             secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax',
+            sameSite: 'lax',
             maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
             path: '/api/auth'
             

@@ -76,6 +76,18 @@ export function validateLogin ( req: Request, res: Response, next: NextFunction 
 
 }
 
+export function validateRefreshCookie ( req: Request, res: Response, next: NextFunction ) {
+
+    if ( typeof req.cookies.refreshToken !== 'string' ) {
+
+        return res.status(401).json({ message: 'invalid cookie' })
+
+    }
+
+    next()
+
+}
+
 
 export function validateVerifyEmail ( req: Request, res: Response, next: NextFunction ) {
 
