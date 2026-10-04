@@ -122,3 +122,29 @@ export function validateSendVerificationCode ( req: Request, res: Response, next
     next()
 
 }
+
+export function validateResetPassword ( req: Request, res: Response, next: NextFunction ){
+
+    const { newPassword, confirmPassword} = req.body
+
+    if ( typeof newPassword !== 'string' || typeof confirmPassword !== 'string' ) {
+
+        return res.status(400).json( { message: 'password is required' } )
+
+    }
+
+    if ( !PASSWORD_REGEX.test(newPassword) ) {
+
+        return res.status(400).json( { message: 'Password is invalid' } )
+
+    }
+
+    if ( newPassword !== confirmPassword ) {
+
+        return res.status(400).json( { message: 'Password and confirm password must match' } )
+
+    }
+
+    next()
+
+}

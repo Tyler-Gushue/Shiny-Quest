@@ -4,10 +4,16 @@ import { connectDB } from './config/db.js'
 import authRoutes from './routes/auth.routes.js'
 import cookieParser from 'cookie-parser'
 import { globalLimiter} from './middleware/rateLimiters.js'
+import cors from 'cors'
 
 const app = express()
 
 app.set('trust proxy', 1)
+
+app.use(cors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+}))
 
 app.use(globalLimiter)
 app.use(express.json())

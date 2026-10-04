@@ -5,6 +5,7 @@ import { User } from '../models/User.js'
 import { RefreshToken } from '../models/RefreshToken.js'
 import { sendVerificationEmail, sendResetEmail } from './email.service.js'
 import { createVerificationCode, verifyCode } from './verification.service.js'
+import { VerificationCode } from '../models/VerificationCode.js'
 
 // Types for what signup receives
 interface SignupInput {
@@ -29,16 +30,22 @@ interface VerifyCode {
   code: string
 }
 
+interface ResetPasswordInput {
+  userId: string
+  newPassword: string
+}
+
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
+const JWT_RESET_SECRET = process.env.JWT_RESET_SECRET
 
 const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || '15m'
-
+const RESET_TOKEN_EXPIRES_IN = process.env.RESET_TOKEN_EXPIRES_IN || '10m'
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 
 /**
- * 
- * @param userId 
- * @returns 
+ * function for generating access tokens so users can access protected routes
+ * @param userId - user id connected to the access token
+ * @returns the access token
  */
 export function generateAccessToken(userId: string): string {
 
@@ -53,6 +60,23 @@ export function generateAccessToken(userId: string): string {
 }
 
 /**
+ * function for generating reset tokens so users can reset password
+ * @param userId - user id connected to the reset token
+ * @returns the reset token
+ */
+export function generateResetToken(userId: string): string {
+
+  if (!JWT_RESET_SECRET) throw new Error('JWT_RESET_SECRET is not set in .env')
+
+  return jwt.sign(
+    { sub: userId },
+    JWT_RESET_SECRET,
+    { expiresIn: RESET_TOKEN_EXPIRES_IN as jwt.SignOptions['expiresIn'] }
+  )
+
+}
+
+/**
  * 
  * @param userId 
  * @returns 
@@ -61,9 +85,11 @@ export async function createRefreshToken(userId: string): Promise<string> {
 
   const token = crypto.randomBytes(64).toString('hex')
 
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
   const expiresAt = new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000)
 
-  await RefreshToken.create({ token, userId, expiresAt })
+  await RefreshToken.create({ tokenHash, userId, expiresAt })
 
   return token
 
@@ -151,7 +177,9 @@ export async function login( input : LoginInput ) {
  */
 export async function  refresh( token: string ) {
 
-  const storedToken = await RefreshToken.findOne( { token } )
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
+  const storedToken = await RefreshToken.findOne({ tokenHash })
 
   if ( !storedToken || storedToken.expiresAt < new Date() ) {
 
@@ -184,7 +212,9 @@ export async function  refresh( token: string ) {
  */
 export async function logout( token: string ) {
 
-  await RefreshToken.deleteOne( { token } )
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
+
+  await RefreshToken.deleteOne({ tokenHash })
 
 }
 
@@ -201,6 +231,22 @@ export function verifyAccessToken( token: string ): string {
   }
 
   return payload.sub
+
+}
+
+export function verifyResetToken( token: string ): { userId: string, iat: number } {
+
+  if (!JWT_RESET_SECRET) throw new Error('JWT_RESET_SECRET is not set in .env')
+
+  const payload = jwt.verify( token, JWT_RESET_SECRET )
+
+  if ( typeof payload === 'string' || !payload.sub || !payload.iat ) {
+
+    throw new Error('Invalid reset token')
+
+  }
+
+  return { userId: payload.sub, iat: payload.iat }
 
 }
 
@@ -400,22 +446,40 @@ export async function verifyReset (input: VerifyCode) {
 
     }
 
-    const accessToken = generateAccessToken(userId)
-    const refreshToken = await createRefreshToken(userId)
+    const resetToken = generateResetToken(userId)
 
-    return {
-
-      user: { id: userId, username: user.username, email: user.email },
-      accessToken,
-      refreshToken
-
-    }
-
+    return { resetToken }
 
   } else {
 
     throw new Error('Invalid or expired code')
 
   }
+
+}
+
+export async function resetPassword (input: ResetPasswordInput) {
+
+  const { userId, newPassword} = input
+
+  const user = await User.findById(userId)
+
+  if ( !user ) {
+
+    throw new Error('User not found')
+
+  }
+
+  await VerificationCode.deleteOne({ $and: [{ userId }, { purpose: 'password_reset' }] })
+
+  const passwordHash = await bcrypt.hash(newPassword.trim(), 12)
+
+  user.passwordHash = passwordHash
+  user.passwordLastUpdated = new Date()
+  await user.save()
+
+  await RefreshToken.deleteMany({ userId })
+
+  return
 
 }

@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import { signupController, loginController, refreshController, logoutController, meController, verifyEmailController, verifyResetController, sendEmailVerificationCodeController, sendResetVerificationCodeController } from '../controllers/auth.controller.js'
-import { validateSignup, validateLogin, validateVerifyEmail, validateSendVerificationCode } from '../middleware/validateAuth.js'
+import { signupController, loginController, refreshController, logoutController, meController, verifyEmailController, verifyResetController, sendEmailVerificationCodeController, sendResetVerificationCodeController, resetPasswordController } from '../controllers/auth.controller.js'
+import { validateSignup, validateLogin, validateVerifyEmail, validateSendVerificationCode, validateResetPassword } from '../middleware/validateAuth.js'
 import { checkOrigin } from '../middleware/checkOrigin.js'
 import { requireAuth } from '../middleware/requireAuth.js'
-import { loginIpLimiter, loginAccountLimiter, registerLimiter, verifyLimiter, sendVerificationAccountLimiter, sendVerificationIpLimiter } from '../middleware/rateLimiters.js'
+import { requireResetToken } from '../middleware/requireResetToken.js'
+import { loginIpLimiter, loginAccountLimiter, registerLimiter, verifyLimiter, sendVerificationAccountLimiter, sendVerificationIpLimiter, resetPasswordLimiter } from '../middleware/rateLimiters.js'
 
 const router = Router()
 
@@ -16,5 +17,6 @@ router.post( '/verify-email', verifyLimiter, validateVerifyEmail, verifyEmailCon
 router.post( '/verify-reset', verifyLimiter, validateVerifyEmail, verifyResetController )
 router.post( '/email-code', sendVerificationIpLimiter, sendVerificationAccountLimiter, validateSendVerificationCode, sendEmailVerificationCodeController )
 router.post( '/reset-code', sendVerificationIpLimiter, sendVerificationAccountLimiter, validateSendVerificationCode, sendResetVerificationCodeController )
+router.post( '/reset-password',  requireResetToken, resetPasswordLimiter, validateResetPassword, resetPasswordController)
 
 export default router

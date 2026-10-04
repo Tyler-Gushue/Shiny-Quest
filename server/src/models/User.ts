@@ -7,6 +7,7 @@ export interface IUser {
   emailVerified: boolean
   createdAt: Date
   updatedAt: Date
+  passwordLastUpdated?: Date
 }
 
 const userSchema = new Schema<IUser>(
@@ -30,6 +31,9 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       select: false,
+    },
+    passwordLastUpdated: {
+      type: Date
     },
     emailVerified: {
       type: Boolean,

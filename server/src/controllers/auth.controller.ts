@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { signup, login, refresh, logout, getCurrentUser, verifyEmail, sendEmailVerificationCode, sendResetVerificationCode, verifyReset } from '../services/auth.service.js'
+import { signup, login, refresh, logout, getCurrentUser, verifyEmail, sendEmailVerificationCode, sendResetVerificationCode, verifyReset, resetPassword } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
@@ -256,23 +256,45 @@ export async function verifyResetController ( req: Request, res: Response ) {
 
     try {
 
-        const { user, accessToken, refreshToken } = await verifyReset(req.body)
+        const { resetToken } = await verifyReset(req.body)
 
-        res.cookie('refreshToken', refreshToken, {
-
-            httpOnly: true,
-            secure: isProduction,
-            sameSite: isProduction ? 'none' : 'lax',
-            maxAge: REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
-            path: '/api/auth'
-            
-        })
-
-        res.status(200).json( { user, accessToken, message: 'Password Reseted' } )
+        res.status(200).json( { resetToken, message: 'Code Success' } )
 
     } catch (err) {
 
         if ( err instanceof Error && err.message === 'Invalid or expired code' ) {
+
+            return res.status(400).json({ message: err.message })
+
+        }
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}
+
+export async function resetPasswordController ( req: Request, res: Response ) {
+
+    if ( !req.userId ) {
+
+        return res.status(401).json({ message: "Not authenticated" })
+
+    }
+
+    try {
+
+        const userId = req.userId
+        const { newPassword } = req.body
+
+        await resetPassword({ userId, newPassword })
+
+        res.status(200).json({ message: "Reset Password Success" })
+
+    } catch (err) {
+
+        if ( err instanceof Error && err.message === 'User not found' ) {
 
             return res.status(400).json({ message: err.message })
 

@@ -45,7 +45,7 @@ export const loginAccountLimiter = rateLimit ({
 
         const normalizedEmail = email.trim().toLowerCase();
 
-        return `${ipKey}-${normalizedEmail}`;
+        return `${normalizedEmail}`;
 
     }
 
@@ -108,3 +108,31 @@ export const sendVerificationAccountLimiter = rateLimit ({
     }
 
 });
+
+export const resetPasswordLimiter = rateLimit ({
+
+    windowMs: 30 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false, 
+    message: { message: 'Too many change password attempts, please try again later.' },
+
+    keyGenerator: (req, res) => {
+
+        const ipKey = ipKeyGenerator(req.ip ?? '');
+
+        const userId = req.userId;
+
+        if ( typeof userId !== 'string' ) {
+
+            return ipKey;
+
+        }
+
+        const normalizedUserId = userId;
+
+        return normalizedUserId;
+
+    }
+
+})

@@ -1,7 +1,7 @@
 import { Schema, model, Types } from 'mongoose'
 
 export interface IRefreshToken {
-  token: string
+  tokenHash: string
   userId: Types.ObjectId
   expiresAt: Date
   createdAt: Date
@@ -10,7 +10,7 @@ export interface IRefreshToken {
 
 const refreshTokenSchema = new Schema<IRefreshToken>(
   {
-    token: {
+    tokenHash: {
       type: String,
       required: true,
       unique: true,
