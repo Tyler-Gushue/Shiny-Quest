@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from 'express'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\x20-\x7E]{8,72}$/
+const USERNAME_REGEX = /^[\x21-\x7E]{3,20}$/
 const CODE_REGEX = /^\d{6}$/
 
 /**
@@ -13,7 +14,7 @@ const CODE_REGEX = /^\d{6}$/
  */
 export function validateSignup ( req: Request, res: Response, next: NextFunction ) {
 
-    const { username, email, password, confirmPassword } = req.body
+    const { username, email, password, confirmPassword } = req.body ?? {}
 
     if ( typeof username !== 'string' || typeof email !== 'string' || typeof password !== 'string' || typeof confirmPassword !== 'string' ) {
 
@@ -21,9 +22,9 @@ export function validateSignup ( req: Request, res: Response, next: NextFunction
 
     }
 
-    if ( username.length < 3 || username.length > 20 ) {
+    if ( !USERNAME_REGEX.test(username.trim()) ) {
 
-        return res.status(400).json( { message: 'username must be 3-20 characters in length' } )
+        return res.status(400).json({ message: 'invalid username' })
 
     }
 
@@ -33,13 +34,13 @@ export function validateSignup ( req: Request, res: Response, next: NextFunction
 
     }
 
-    if ( !PASSWORD_REGEX.test(password) ) {
+    if ( !PASSWORD_REGEX.test(password.trim()) ) {
 
         return res.status(400).json( { message: 'Password must be 8 to 72 characters long, one lowercase letter, one uppercase letter, and atleast one number' } )
 
     }
 
-    if ( password !== confirmPassword ) {
+    if ( password.trim() !== confirmPassword.trim() ) {
 
         return res.status(400).json( { message: 'Password and confirm password do not match' } )
 
@@ -58,7 +59,7 @@ export function validateSignup ( req: Request, res: Response, next: NextFunction
  */
 export function validateLogin ( req: Request, res: Response, next: NextFunction ) {
 
-    const { email, password } = req.body
+    const { email, password } = req.body ?? {}
 
     if ( typeof email !== 'string' || typeof password !== 'string' ) {
 
@@ -91,7 +92,7 @@ export function validateRefreshCookie ( req: Request, res: Response, next: NextF
 
 export function validateVerifyEmail ( req: Request, res: Response, next: NextFunction ) {
 
-    const { email, code } = req.body
+    const { email, code } = req.body ?? {}
 
     if ( typeof email !== 'string' || typeof code !== 'string' ) {
 
@@ -105,7 +106,7 @@ export function validateVerifyEmail ( req: Request, res: Response, next: NextFun
 
     }
 
-    if ( !CODE_REGEX.test(code) ) {
+    if ( !CODE_REGEX.test(code.trim()) ) {
 
         return res.status(400).json( { message: 'code must be 6 digits' } )
 
@@ -117,7 +118,7 @@ export function validateVerifyEmail ( req: Request, res: Response, next: NextFun
 
 export function validateSendVerificationCode ( req: Request, res: Response, next: NextFunction ){
 
-    const { email } = req.body
+    const { email } = req.body ?? {}
 
     if ( typeof email !== 'string' ) {
 
@@ -137,7 +138,7 @@ export function validateSendVerificationCode ( req: Request, res: Response, next
 
 export function validateResetPassword ( req: Request, res: Response, next: NextFunction ){
 
-    const { newPassword, confirmPassword} = req.body
+    const { newPassword, confirmPassword} = req.body ?? {}
 
     if ( typeof newPassword !== 'string' || typeof confirmPassword !== 'string' ) {
 
@@ -145,13 +146,13 @@ export function validateResetPassword ( req: Request, res: Response, next: NextF
 
     }
 
-    if ( !PASSWORD_REGEX.test(newPassword) ) {
+    if ( !PASSWORD_REGEX.test(newPassword.trim()) ) {
 
         return res.status(400).json( { message: 'Password is invalid' } )
 
     }
 
-    if ( newPassword !== confirmPassword ) {
+    if ( newPassword.trim() !== confirmPassword.trim() ) {
 
         return res.status(400).json( { message: 'Password and confirm password must match' } )
 
