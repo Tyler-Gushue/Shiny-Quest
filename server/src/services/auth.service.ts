@@ -492,3 +492,12 @@ export async function resetPassword (input: ResetPasswordInput) {
   return
 
 }
+
+export async function getWebsiteStats () {
+
+  // countDocuments throws on its own if the query fails, so 0 is a valid result here
+  const userCount = await User.countDocuments()
+
+  return { userCount };
+
+}

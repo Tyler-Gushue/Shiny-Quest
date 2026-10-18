@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
-import { signup, login, refresh, logout, getCurrentUser, verifyEmail, sendEmailVerificationCode, sendResetVerificationCode, verifyReset, resetPassword } from '../services/auth.service.js'
+import { signup, login, refresh, logout, getCurrentUser, verifyEmail, sendEmailVerificationCode, 
+    sendResetVerificationCode, verifyReset, resetPassword, getWebsiteStats } from '../services/auth.service.js'
 
 const REFRESH_TOKEN_DAYS = Number(process.env.REFRESH_TOKEN_DAYS) || 7
 const isProduction = process.env.NODE_ENV === 'production'
@@ -309,6 +310,22 @@ export async function resetPasswordController ( req: Request, res: Response ) {
             return res.status(400).json({ message: err.message })
 
         }
+
+        console.error(err)
+        res.status(500).json({ message: 'Something went wrong' })
+
+    }
+
+}
+
+export async function getWebsiteStatsController ( req: Request, res: Response ) {
+
+    try {
+
+        const stats = await getWebsiteStats()
+        res.status(200).json(stats)
+
+    } catch (err) {
 
         console.error(err)
         res.status(500).json({ message: 'Something went wrong' })
