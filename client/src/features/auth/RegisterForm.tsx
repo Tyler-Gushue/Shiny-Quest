@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router';
 import { useMutation } from '@tanstack/react-query'
 import { signUpUser } from '../../api/auth'
+import PasswordStrength from './PasswordStrength'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\x20-\x7E]{8,72}$/
@@ -71,10 +72,10 @@ function RegisterForm () {
 
     })
 
-    const baseInputClass = 'bg-gray-900 w-full py-3 px-2 border-2 rounded-xl mb-2 hover:shadow-xl focus:shadow-xl focus:outline-none'
+    const baseInputClass = 'bg-gray-900 w-full py-3 px-2 text-base border-2 rounded-xl mb-2 hover:shadow-xl focus:shadow-xl focus:outline-none'
     const normalInputClass = 'border-gray-700 hover:border-amber-400 focus:border-amber-400 hover:shadow-amber-400/20 focus:shadow-amber-400/30'
     const errorInputClass = 'border-red-500 shadow-xl shadow-red-500/20 hover:shadow-red-500/30 focus:shadow-red-500/30'
-    const errorTextClass = 'text-red-500 text-sm -mt-1 mb-2 max-w-100'
+    const errorTextClass = 'text-red-500 text-sm -mt-1 mb-2 lg:max-w-100'
 
     function handleSubmit( e: FormEvent<HTMLFormElement> ) {
 
@@ -98,14 +99,14 @@ function RegisterForm () {
 
     return (
 
-        <form onSubmit={handleSubmit} className="bg-gray-800 border-t-5 border-2 border-t-amber-400 border-gray-700 rounded-xl py-10 px-5">
+        <form onSubmit={handleSubmit} className="w-full max-w-md lg:w-auto lg:max-w-none px-1 lg:bg-gray-800 lg:border-t-5 lg:border-2 lg:border-t-amber-400 lg:border-gray-700 lg:rounded-xl lg:py-10 lg:px-5">
                 <div>
-                    <h1 className='text-4xl font-bold'>Create an account</h1>
-                    <p className='text-gray-400 mt-3'>Start logging your hunts and shiny catches</p>
+                    <h1 className='text-2xl lg:text-4xl font-bold'>Create an account</h1>
+                    <p className='text-gray-400 text-sm lg:text-base mt-1 lg:mt-3'>Start logging your hunts and shiny catches</p>
                 </div>
-                <div className='mt-6'>
+                <div className='mt-4 lg:mt-6'>
                     <div className='mb-1'>
-                        <label htmlFor='trainerName' className=''>Trainer name</label>
+                        <label htmlFor='trainerName' className='text-base'>Trainer name</label>
                     </div>
                     <input
                         className={`${baseInputClass} ${trainerNameError ? errorInputClass : normalInputClass}`}
@@ -123,7 +124,7 @@ function RegisterForm () {
                 </div>
                 <div>
                     <div className='mb-1'>
-                        <label htmlFor='email' className=''>Email</label>
+                        <label htmlFor='email' className='text-base'>Email</label>
                     </div>
                     <input
                         className={`${baseInputClass} ${emailError ? errorInputClass : normalInputClass}`}
@@ -140,8 +141,8 @@ function RegisterForm () {
                     {emailError && <p className={errorTextClass}>{emailError}</p>}
                 </div>
                 <div>
-                    <div className='mb-1 mt-2'>
-                        <label htmlFor='password'>Password</label>
+                    <div className='mb-1 lg:mt-2'>
+                        <label htmlFor='password' className='text-base'>Password</label>
                     </div>
                     <input
                         className={`${baseInputClass} ${passwordError ? errorInputClass : normalInputClass}`}
@@ -159,11 +160,12 @@ function RegisterForm () {
                         }}
                         placeholder='Password'
                     />
+                    <PasswordStrength password={password} />
                     {passwordError && <p className={errorTextClass}>{passwordError}</p>}
                 </div>
-                <div className='mb-7'>
-                    <div className='mb-1 mt-2'>
-                        <label htmlFor='confirmPassword'>Confirm Password</label>
+                <div className='mb-5 lg:mb-7'>
+                    <div className='mb-1 lg:mt-2'>
+                        <label htmlFor='confirmPassword' className='text-base'>Confirm Password</label>
                     </div>
                     <input
                         className={`${baseInputClass} ${confirmPasswordError ? errorInputClass : normalInputClass}`}
@@ -181,12 +183,12 @@ function RegisterForm () {
                 </div>
                 <div className='flex justify-center flex-col'>
                     {serverError && (
-                        <p className='text-red-500 font-bold text-center mb-3 max-w-100'>{serverError}</p>
+                        <p className='text-red-500 font-bold text-center mb-3 lg:max-w-100'>{serverError}</p>
                     )}
                     <button
                         type="submit"
                         disabled={signUpMutation.isPending}
-                        className='flex justify-center items-center bg-amber-400 w-100 py-3 px-1 rounded-xl text-black font-bold text-xl active:bg-amber-500 active:text-gray-800 disabled:cursor-not-allowed disabled:active:bg-amber-400'
+                        className='flex justify-center items-center bg-amber-400 w-full lg:w-100 py-3 px-1 rounded-xl text-black font-bold text-lg lg:text-xl active:bg-amber-500 active:text-gray-800 disabled:cursor-not-allowed disabled:active:bg-amber-400'
                     >
                         {signUpMutation.isPending ? (
                             <span className='h-7 w-7 border-4 border-black border-t-transparent rounded-full animate-spin' aria-label='Creating account' />
@@ -194,7 +196,7 @@ function RegisterForm () {
                             'Register'
                         )}
                     </button>
-                    <Link to="/login" className=" flex gap-1 text-amber-400 ml-auto mr-auto mt-3">
+                    <Link to="/login" className="flex gap-1 text-amber-400 ml-auto mr-auto mt-3">
                         <p className='text-gray-400'>Already have an account? </p>
                         <p className='font-bold'>Log in</p>
                     </Link>
