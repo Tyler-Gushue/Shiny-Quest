@@ -8,7 +8,7 @@ export async function requireResetToken ( req: Request, res: Response, next: Nex
 
     if ( !header || !header.startsWith('Bearer ') ) {
 
-        return res.status(401).json({ message: 'Unauthorized' })
+        return res.status(401).json({ message: 'Your reset session has expired, please request a new code' })
 
     }
 
@@ -22,13 +22,13 @@ export async function requireResetToken ( req: Request, res: Response, next: Nex
 
         if ( !user ) {
 
-            return res.status(401).json({ message: 'Invalid or expired reset token' })
+            return res.status(401).json({ message: 'Your reset session has expired, please request a new code' })
 
         }
 
         if ( user.passwordLastUpdated && user.passwordLastUpdated.getTime() > iat * 1000 ) {
 
-            return res.status(401).json({ message: 'Invalid or expired reset token' })
+            return res.status(401).json({ message: 'Your reset session has expired, please request a new code' })
 
         }
 
@@ -38,7 +38,7 @@ export async function requireResetToken ( req: Request, res: Response, next: Nex
 
     } catch (err) {
 
-        return res.status(401).json({ message: 'Invalid or expired reset token' })
+        return res.status(401).json({ message: 'Your reset session has expired, please request a new code' })
 
     }
 

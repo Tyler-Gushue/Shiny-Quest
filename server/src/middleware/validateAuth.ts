@@ -24,7 +24,7 @@ export function validateSignup ( req: Request, res: Response, next: NextFunction
 
     if ( !USERNAME_REGEX.test(username.trim()) ) {
 
-        return res.status(400).json({ message: 'invalid username' })
+        return res.status(400).json({ message: 'Invalid username' })
 
     }
 
@@ -36,7 +36,7 @@ export function validateSignup ( req: Request, res: Response, next: NextFunction
 
     if ( !PASSWORD_REGEX.test(password.trim()) ) {
 
-        return res.status(400).json( { message: 'Password must be 8 to 72 characters long, one lowercase letter, one uppercase letter, and atleast one number' } )
+        return res.status(400).json( { message: 'Password must be 8 to 72 characters long, one lowercase letter, one uppercase letter, and at least one number' } )
 
     }
 
@@ -108,7 +108,7 @@ export function validateVerifyEmail ( req: Request, res: Response, next: NextFun
 
     if ( !CODE_REGEX.test(code.trim()) ) {
 
-        return res.status(400).json( { message: 'code must be 6 digits' } )
+        return res.status(400).json( { message: 'Code must be 6 digits' } )
 
     }
 
@@ -142,7 +142,7 @@ export function validateResetPassword ( req: Request, res: Response, next: NextF
 
     if ( typeof newPassword !== 'string' || typeof confirmPassword !== 'string' ) {
 
-        return res.status(400).json( { message: 'password is required' } )
+        return res.status(400).json( { message: 'Password is required' } )
 
     }
 
