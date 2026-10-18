@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import ShinyQuestLogo from '../assets/ShinyQuestLogo.svg';
 import StarBackground from './StarBackground';
+import { getWebsiteStats } from '../api/auth';
 
 type AuthLayoutProps = {
     tagline: ReactNode;
@@ -8,6 +10,20 @@ type AuthLayoutProps = {
 };
 
 function AuthLayout({ tagline, children }: AuthLayoutProps) {
+
+    const statsQuery = useQuery({
+
+        queryKey: ['websiteStats'],
+        queryFn: getWebsiteStats,
+        // The count doesn't need to be live, so don't refetch every time login/register mounts
+        staleTime: 5 * 60 * 1000
+
+    })
+
+    // Stays as "- - -" while loading or if the request fails
+    const userCount = statsQuery.data?.userCount as number | undefined
+    const trainersJoined = userCount !== undefined ? userCount.toLocaleString() : '- - -'
+
     return (
             <section id='login-page' className='flex justify-center min-h-screen font-display'>
 
@@ -30,7 +46,7 @@ function AuthLayout({ tagline, children }: AuthLayoutProps) {
                             <text>Shinies Logged</text>
                         </div>
                         <div className="flex flex-col ml-auto mr-auto">
-                            <text>- - -</text>
+                            <text>{trainersJoined}</text>
                             <text>Trainers Joined</text>
                         </div>
                         

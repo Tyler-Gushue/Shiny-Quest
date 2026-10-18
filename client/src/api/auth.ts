@@ -105,3 +105,9 @@ export async function resetPassword( resetToken: string, newPassword: string, co
     return postJson('/auth/reset-password', { newPassword, confirmPassword }, { 'Authorization': `Bearer ${resetToken}` })
 
 }
+
+export async function getWebsiteStats () {
+
+    return request('/auth/website-stats', { method: 'GET' })
+
+}
