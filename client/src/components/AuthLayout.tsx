@@ -25,7 +25,7 @@ function AuthLayout({ tagline, children }: AuthLayoutProps) {
     const trainersJoined = userCount !== undefined ? userCount.toLocaleString() : '- - -'
 
     return (
-            <section id='login-page' className='flex justify-center min-h-screen font-display'>
+            <section id='login-page' className='flex justify-center min-h-dvh font-display'>
 
                 <section id="left-side" className='relative hidden lg:flex flex-col w-3/7 justify-center bg-gray-900 text-white border-r-2 border-gray-700 pl-8 pr-8 gap-4 overflow-hidden bg-gradient-to-b from-gray-950 via-gray-900 to-gray-850'>
 
@@ -56,7 +56,7 @@ function AuthLayout({ tagline, children }: AuthLayoutProps) {
 
                 <section 
                     id="right-side" 
-                    className="relative flex flex-1 min-h-screen lg:h-screen bg-gray-950 text-white justify-center flex-col items-center overflow-hidden px-4 py-10 lg:p-0"
+                    className="relative flex flex-1 min-h-dvh lg:h-screen bg-gray-950 text-white justify-center flex-col items-center overflow-hidden px-4 py-10 lg:p-0"
                 >
                     <StarBackground/>
                     <div className="relative z-10 flex flex-col items-center w-full lg:w-auto">

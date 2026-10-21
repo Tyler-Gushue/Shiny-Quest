@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 @layer base {
+    html,
+    body {
+        background-color: var(--color-gray-950);
+    }
+
     button:not(:disabled) {
         cursor: pointer;
     }
