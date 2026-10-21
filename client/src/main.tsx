@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router } from "./router";
 import "./index.css"
 import { AuthProvider } from "./context/AuthContext";
+import PageLoader from "./components/PageLoader";
 
 const queryClient = new QueryClient();
 
@@ -13,6 +14,7 @@ createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <RouterProvider router={router} />
+        <PageLoader />
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>

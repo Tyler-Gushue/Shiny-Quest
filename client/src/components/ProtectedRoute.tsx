@@ -6,8 +6,9 @@ export default function ProtectedRoute() {
     const { user, isLoading } = useAuth();
     const location = useLocation();
 
+    // PageLoader's overlay covers the screen while the session check runs
     if (isLoading) {
-        return <div>Loading...</div>;
+        return null;
     }
 
     if (!user) {
