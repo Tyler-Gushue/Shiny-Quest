@@ -48,7 +48,6 @@ function ChangePasswordForm() {
 
         onError: (error) => {
 
-            console.log('password reset failed', error)
             setPasswordError(error.message || 'Something went wrong')
 
         }

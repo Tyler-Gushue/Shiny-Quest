@@ -22,7 +22,6 @@ function VerifyEmailForm () {
 
         onSuccess: (data) => {
 
-            console.log("Email verified", data)
             setCodeError("")
 
             // verify-email logs the user in too, so save them in AuthContext before going to a protected page
@@ -33,7 +32,6 @@ function VerifyEmailForm () {
 
         onError: (error) => {
 
-            console.log('verification failed', error)
             setCodeError(error.message)
 
         }

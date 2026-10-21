@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src", "../shared/types/express.d.ts"]
+  "include": ["src"]
 }

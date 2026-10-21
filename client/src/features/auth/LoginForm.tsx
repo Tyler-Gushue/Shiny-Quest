@@ -21,7 +21,6 @@ function LoginForm () {
 
         onSuccess: (data) => {
 
-            console.log("logged in!", data)
             setEmailError(false)
             setPasswordError(false)
 
@@ -36,7 +35,6 @@ function LoginForm () {
 
         onError: (error, vars) => {
 
-            console.log('login failed', error)
 
             // Correct login but the account isn't verified yet (server already sent a new code)
             if (error.message === 'Email is not verified') {

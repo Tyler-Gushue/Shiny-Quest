@@ -29,7 +29,6 @@ function VerifyCodeForm () {
 
         onError: (error) => {
 
-            console.log('reset code verification failed', error)
             setCodeError(error.message)
 
         }

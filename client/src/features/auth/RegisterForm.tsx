@@ -55,9 +55,8 @@ function RegisterForm () {
         mutationFn: ( vars: { username: string; email: string; password: string; confirmPassword: string }) =>
             signUpUser(vars.username, vars.email, vars.password, vars.confirmPassword),
 
-        onSuccess: (data, vars) => {
+        onSuccess: (_data, vars) => {
 
-            console.log("signed up!", data)
             setServerError('')
             navigate("/verifyEmail", { state: { email: vars.email } })
 
@@ -65,7 +64,6 @@ function RegisterForm () {
 
         onError: (error) => {
 
-            console.log('sign up failed', error)
             setServerError(error.message || 'Something went wrong')
 
         }

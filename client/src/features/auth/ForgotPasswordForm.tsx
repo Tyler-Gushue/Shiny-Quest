@@ -24,7 +24,6 @@ function ForgotPasswordForm () {
 
         onError: (error) => {
 
-            console.log('sending reset code failed', error)
             setEmailError(error.message)
 
         }
