@@ -120,8 +120,18 @@ export async function signup(input : SignupInput) {
 
   const user = await User.create( { email, username, passwordHash})
 
-  await sendVerificationCode({ email, userId: user._id.toString(), purpose: 'email_verification' })
+  try {
 
+    await sendVerificationCode({ email, userId: user._id.toString(), purpose: 'email_verification' })
+
+  } catch (err) {
+
+    await VerificationCode.deleteMany({ userId: user._id })
+    await User.deleteOne({ _id: user._id })
+    throw err
+
+  }
+  
   return {
     email: user.email
   }

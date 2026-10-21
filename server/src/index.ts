@@ -1,27 +1,7 @@
 import 'dotenv/config'
-import express from 'express'
+import './config/env.js'
+import app from './app.js'
 import { connectDB } from './config/db.js'
-import authRoutes from './routes/auth.routes.js'
-import cookieParser from 'cookie-parser'
-import { globalLimiter} from './middleware/rateLimiters.js'
-import cors from 'cors'
-import helmet from 'helmet'
-
-const app = express()
-
-app.set('trust proxy', 1)
-app.use(helmet())
-
-app.use(cors({
-    origin: process.env.CLIENT_ORIGIN,
-    credentials: true,
-}))
-
-app.use(globalLimiter)
-app.use(express.json())
-app.use(cookieParser())
-
-app.use('/api/auth', authRoutes)
 
 connectDB()
   .then(() => {

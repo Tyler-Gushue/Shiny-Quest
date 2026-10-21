@@ -5,6 +5,7 @@ export const globalLimiter = rateLimit ({
 
     windowMs: 15 * 60 * 1000,
     limit: 300,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many requests, please try again later.' } 
@@ -15,6 +16,7 @@ export const loginIpLimiter = rateLimit ({
 
     windowMs: 15 * 60 * 1000,
     limit: 20,
+    skip: () => process.env.NODE_ENV === 'test',
     skipSuccessfulRequests: true,
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
@@ -26,6 +28,7 @@ export const loginAccountLimiter = rateLimit ({
 
     windowMs: 15 * 60 * 1000,
     limit: 5,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     skipSuccessfulRequests: true,
     legacyHeaders: false, 
@@ -55,6 +58,7 @@ export const registerLimiter = rateLimit ({
 
     windowMs: 60 * 60 * 1000,
     limit: 5,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     message: { message: 'Too many registration attempts, please try again later.' }
@@ -65,6 +69,7 @@ export const verifyLimiter = rateLimit ({
 
     windowMs: 15 * 60 * 1000,
     limit: 10,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     message: { message: 'Too many verification attempts, please try again later.'}
@@ -75,6 +80,7 @@ export const sendVerificationIpLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
     limit: 10,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many resend requests, please try again later.' }    
@@ -85,6 +91,7 @@ export const sendVerificationAccountLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
     limit: 5,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many resend requests, please try again later.' },
@@ -103,7 +110,7 @@ export const sendVerificationAccountLimiter = rateLimit ({
 
         const normalizedEmail = email.trim().toLowerCase();
 
-        return normalizedEmail;
+        return `${ipKey}:${normalizedEmail}`;
 
     }
 
@@ -113,6 +120,7 @@ export const sendResetIpLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
     limit: 10,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many reset code requests, please try again later.' }    
@@ -123,6 +131,7 @@ export const sendResetAccountLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
     limit: 5,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many reset code requests, please try again later.' },
@@ -138,10 +147,9 @@ export const sendResetAccountLimiter = rateLimit ({
             return ipKey;
 
         }
-
         const normalizedEmail = email.trim().toLowerCase();
 
-        return normalizedEmail;
+        return `${ipKey}:${normalizedEmail}`;
 
     }
 
@@ -151,6 +159,7 @@ export const resetPasswordLimiter = rateLimit ({
 
     windowMs: 30 * 60 * 1000,
     limit: 5,
+    skip: () => process.env.NODE_ENV === 'test',
     standardHeaders: 'draft-8',
     legacyHeaders: false, 
     message: { message: 'Too many change password attempts, please try again later.' },
