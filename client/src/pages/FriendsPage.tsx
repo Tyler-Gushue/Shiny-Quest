@@ -1,10 +1,12 @@
+import InDevelopment from '../components/InDevelopment';
+
 function FriendsPage () {
 
     return (
 
         <>
             <section id='friends-page'>
-                <h1>Friends</h1>
+                <InDevelopment pageName='Friends' />
             </section>
         </>
 

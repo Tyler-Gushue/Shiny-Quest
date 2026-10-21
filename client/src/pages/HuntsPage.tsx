@@ -1,10 +1,12 @@
+import InDevelopment from '../components/InDevelopment';
+
 function HuntsPage () {
 
     return (
 
         <>
             <section id='hunts-page'>
-                <h1>Hunts</h1>
+                <InDevelopment pageName='Hunts' />
             </section>
         </>
 

@@ -1,10 +1,12 @@
+import InDevelopment from '../components/InDevelopment';
+
 function DashboardPage () {
 
     return (
 
         <>
             <section id='dashboard-page'>
-                <h1>Dashboard</h1>
+                <InDevelopment pageName='Dashboard' />
             </section>
         </>
 
