@@ -9,6 +9,9 @@ import FriendsPage from "./pages/FriendsPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.tsx"
+import VerifyResetCodePage from "./pages/VerifyResetCodePage.tsx"
+import ChangePasswordPage from "./pages/ChangePasswordPage.tsx"
+import VerifyEmailPage from "./pages/VerifyEmailPage.tsx"
 
 export const router = createBrowserRouter([
   
@@ -16,6 +19,9 @@ export const router = createBrowserRouter([
     { path: "/login", element: <LoginPage /> },
     { path: "/register", element: <RegisterPage /> },
     { path: "/forgotPassword", element: <ForgotPasswordPage />},
+    { path: "/forgotPassword/verify", element: <VerifyResetCodePage /> },
+    { path: "/changePassword", element: <ChangePasswordPage /> },
+    { path: "/verifyEmail", element: <VerifyEmailPage /> },
 
     // Everything below requires login
     {

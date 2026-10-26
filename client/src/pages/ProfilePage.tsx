@@ -1,10 +1,12 @@
+import InDevelopment from '../components/InDevelopment';
+
 function ProfilePage () {
 
     return (
 
         <>
             <section id='profile-page'>
-                <h1>Profile</h1>
+                <InDevelopment pageName='Profile' />
             </section>
         </>
 

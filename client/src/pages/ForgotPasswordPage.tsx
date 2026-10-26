@@ -1,13 +1,14 @@
+import RecoveryLayout from '../components/RecoveryLayout';
+import ForgotPasswordForm from '../features/auth/ForgotPasswordForm';
+
 function ForgotPasswordPage () {
 
     return (
-
         <>
-            <section id='forgot-password-page'>
-                <h1>Forgot Password Page</h1>
-            </section>
+            <RecoveryLayout>
+                <ForgotPasswordForm />
+            </RecoveryLayout>
         </>
-
     )
 
 }

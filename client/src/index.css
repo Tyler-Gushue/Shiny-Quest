@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+@layer base {
+    html,
+    body {
+        background-color: var(--color-gray-950);
+    }
+
+    button:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
 @theme {
-    --font-poppins: "Poppins", sans-serif;
+    --font-sans: "Poppins", sans-serif;       /* body text everywhere */
+    --font-display: "Sniglet", sans-serif;    /* use with className="font-display" */
 }
