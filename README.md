@@ -19,9 +19,11 @@
 
 ## About
 
-Shiny Quest is a solo portfolio project I'm building to show I can make web apps that work properly and are secure. The backend and all of the auth logic are written by hand. I used AI only for some front-end styling work, like the mobile layout.
+Shiny Quest is a portfolio project I’m using to learn and have fun with.
 
-The app is live. The full authentication system is finished, tested and deployed, and hunt tracking is what I'm building next.
+Some of my friends are shiny hunters, and they feel there’s no good tool for tracking their hunts and sharing them with each other. So I decided to make one.
+
+The app is live. The full authentication system is finished, tested and deployed, and hunt tracking is what I’m building next.
 
 ## Tech Stack
 
@@ -162,12 +164,6 @@ npm test
 - [ ] **Profile**: profile picture, shiny showcase, favorite shiny, current target, failed hunts and overall stats
 - [ ] **Friends**: add friends and view their profiles
 - [ ] **Home page**: a landing page that introduces the platform
-
-### 💡 After v1
-- [ ] Support section with a rate-limited contact form, reachable from the home page and inside the app
-- [ ] FAQ
-- [ ] Settings page for account details (email, username, password) and preferences
-- [ ] Group features
 
 ## Running Locally
 
